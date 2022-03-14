@@ -72,7 +72,7 @@ class FilterGraph:
 
 
 def create_preview(path):
-    """Process audio file with ffmpeg - max duration, add a compressor, and a fade-out."""
+    """Create 2 second preview from input audio file, add compressor, fade-out, and convert to ogg format."""
 
     # build .ogg output file path
     path_no_ext, _ = os.path.splitext(path)
