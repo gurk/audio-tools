@@ -4,6 +4,9 @@ import glob
 import os
 import subprocess
 
+from ffmpeg_py import FilterGraph, Compressor, FadeOut
+
+
 __author__      = "Graeme Urquhart"
 __version__     = "0.1.0"
 __description__ = "Audio file preview generator (ffmpeg)"
@@ -18,57 +21,6 @@ def main(cli_args):
     if not cli_args.paths:
         for path in glob.iglob('./**/*.aif', recursive=True):
             create_preview(path)
-
-
-class FilterBase:
-    name = ''
-    settings = {}
-
-    def __init__(self, **kwargs):
-        self.settings.update(kwargs)
-
-    def __str__(self):
-        # generate filter argument string
-        return self._make_filter(self.name, self.settings)
-
-    @staticmethod
-    def _make_filter(command: str, settings: dict) -> str:
-        params = [f'{k}={v}' for k, v in settings.items()]
-        return f'{command}={":".join(params)}'
-
-
-class Compressor(FilterBase):
-    name = 'acompressor'
-    settings = dict(
-        threshold=0.1,
-        ratio=2,
-        attack=5
-    )
-
-
-class FadeOut(FilterBase):
-    name = 'afade'
-    settings = dict(
-        type='out',
-        start_time=1.98,
-        duration=0.02
-    )
-
-
-class FilterInstanceError(Exception):
-    pass
-
-
-class FilterGraph:
-    def __init__(self, *filters):
-        for f in filters:
-            if not isinstance(f, FilterBase):
-                raise FilterInstanceError('Filter must be subclass instance of FilterBase.')
-        self._filters = filters
-
-    def __str__(self):
-        # generate filtergraph argument string
-        return ','.join([str(f) for f in self._filters])
 
 
 def create_preview(path):
